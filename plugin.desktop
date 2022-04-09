@@ -1,0 +1,10 @@
+[Xfce Panel]
+Type=X-XFCE-PanelPlugin
+Encoding=UTF-8
+Name=World Clock
+Comment=Simple World Clock Plugin Written In Python
+Icon=org.xfce.panel.clock
+X-XFCE-Module=world-clock-plugin
+X-XFCE-Internal=false
+X-XFCE-Unique=false
+X-XFCE-API=2.0
