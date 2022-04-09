@@ -7,7 +7,7 @@ import gi
 gi.require_version('Gtk','3.0')
 from gi.repository import Gtk, GLib
 from xdg.BaseDirectory import xdg_config_home
-from datetime import datetime
+from datetime import date, datetime
 
 PLUGIN_NAME        = 'World-Clock-Plugin'
 PLUGIN_VERSION     = '0.1.0'
@@ -98,12 +98,18 @@ class PanelPlugin(Gtk.Box):
 
         self.table = Gtk.Table(n_rows=2, n_columns=2, homogeneous=True)
         self.table.set_margin_right(20)
+        self.time_label = Gtk.Label()
         
         self.set_table()
         self.update_time_label()
+        self.box2 =  Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=1)
+        self.box2.pack_start(self.time_label, True, True, 1)
+        self.box2.pack_start(Gtk.Separator(), False, False, 0)
+        self.box2.pack_start(self.table, True, True, 1)
+        
+        self.box.pack_start(self.box2, True, True, 1)
 
-        self.box.pack_start(self.table, True, True, 1)
-        self.box.pack_start(Gtk.Calendar(), True, True, 1)
+        self.box.pack_end(Gtk.Calendar(), True, True, 1)
         self.new_win.add(self.box)
         GLib.timeout_add(1000, self.update_self)
 
@@ -181,6 +187,7 @@ class PanelPlugin(Gtk.Box):
 
 
     def update_time_label(self):
+        self.time_label.set_text(datetime.now().strftime("%A, %B %d, %Y"))
         self.button.set_label(datetime.now().strftime(self.get_time_fmt()))
 
 
