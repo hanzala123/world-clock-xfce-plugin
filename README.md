@@ -66,7 +66,7 @@
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
-[![World-Clock-Plugin][product-screenshot]]()
+![World-Clock-Plugin][product-screenshot]
 
 GTK Theme: Orchis-dark, Icon Theme: Papirus, Window Manager: Gala
 
