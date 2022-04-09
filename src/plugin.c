@@ -24,7 +24,7 @@ sample_py_new(XfcePanelPlugin *plugin)
     sample_py->plugin = plugin;
 
     // Need, otherwise giving error undefined PyExc_NotImplemented
-    sample_py->library_handler = dlopen("libpython3.9.so", RTLD_LAZY | RTLD_GLOBAL);
+    sample_py->library_handler = dlopen("libpython3.10.so", RTLD_LAZY | RTLD_GLOBAL);
     if (sample_py->library_handler == NULL)
     {
         fprintf(stderr, "Error: %s\n", dlerror());

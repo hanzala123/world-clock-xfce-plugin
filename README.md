@@ -66,7 +66,9 @@
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
-[![World-Clock-Plugin][product-screenshot]](https://example.com)
+[![World-Clock-Plugin][product-screenshot]]()
+
+GTK Theme: Orchis-dark, Icon Theme: Papirus, Window Manager: Gala
 
 After switching to XFCE I was amazed at the speed of everything. But one thing that I really miss from KDE or GNOME is the World Clock. I have never worked with GTK or any such Toolkit ever. So with my very very minimal knowledge of GTK I made a fix for it using the [AppIndicator](https://github.com/hanzala123/world-clock-appindicator). But That was taking up precious space in my vertical panel. So I decided to make a plugin from it. But making an XFCE Planel Plugin using Python (My Speciality) is very poorly if not at all documented. But finally I found a project on gitlab and used that as a Base. Much thanks to the creator of that project.
 
