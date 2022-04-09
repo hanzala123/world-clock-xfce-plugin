@@ -112,8 +112,10 @@ The configuration file is called config.json and as the name suggests the file i
 
 The ```format``` is the format in which the time will be displayed. The convention is the one used for formating string in Python's DateTime Module. More About that [here](https://www.programiz.com/python-programming/datetime/strftime).
 
-The ```allocation``` is the place where the calendar will appear. By default it set to ```auto```. Which show the Calendar as next to the plugin when clicked. It can also be set to and list to show the X and Y coordinates of the place the calendar will appear. Something like this
-```python3 run.py``````python3 run.py```
+The ```allocation``` is the place where the calendar will appear. By default it set to ```auto```. Which show the Calendar as next to the plugin when clicked. It can also be set to show at a specific location on the screen. The value should be a list to show the X and Y coordinates of the place the calendar will appear. Something like this
+  ```json
+  "allocation": [0, 0]
+  ```
 The above will show the calendar in the top left corner of the screen (or as close as possible to that).
 
 The ```timezones``` sets the timezones that will appear. By default it's set to Europe/Amsterdam. This is basically as list of lists. The First element of of each child list the generic name of the timezone and the other element is the name that the user wants to be displayed as the name of that timezone. When the program is run for the first time it will also create a file called ```available_timezones.txt``` in the config directory. This will help you find the generic name of the timezone you wish to add. If I want to Dhaka to the plugin alongside Amsterdam it will look like this.
@@ -121,7 +123,6 @@ The ```timezones``` sets the timezones that will appear. By default it's set to 
     "timezones": [
     ["Europe/Amsterdam", "Amsterdam"],
     ["Asia/Dhaka", "Dhaka"]
-
   ]
   ```
 
