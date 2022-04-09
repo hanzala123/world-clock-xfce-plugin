@@ -97,12 +97,12 @@ class PanelPlugin(Gtk.Box):
         self.box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=5)
 
         self.table = Gtk.Table(n_rows=2, n_columns=2, homogeneous=True)
-        self.table.set_margin_right(20)
         self.time_label = Gtk.Label()
         
         self.set_table()
         self.update_time_label()
         self.box2 =  Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=1)
+        self.box2.set_margin_right(20)
         self.box2.pack_start(self.time_label, True, True, 1)
         self.box2.pack_start(Gtk.Separator(), False, False, 0)
         self.box2.pack_start(self.table, True, True, 1)
