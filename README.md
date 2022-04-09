@@ -112,7 +112,7 @@ The configuration file is called config.json and as the name suggests the file i
 
 The ```format``` is the format in which the time will be displayed. The convention is the one used for formating string in Python's DateTime Module. More About that [here](https://www.programiz.com/python-programming/datetime/strftime).
 
-The ```allocation``` is the place where the calendar will appear. By default it set to ```auto```. Which show the Calendar as next to the plugin when clicked. It can also be set to show at a specific location on the screen. The value should be a list to show the X and Y coordinates of the place the calendar will appear. Something like this
+The ```allocation``` is the place where the calendar will appear. By default it set to ```auto```. Which shows the Calendar next to the plugin when clicked. It can also be set to show at a specific location on the screen. The value should be a list to show the X and Y coordinates of the place the calendar will appear. Something like this
   ```json
   "allocation": [0, 0]
   ```
@@ -170,7 +170,7 @@ After Following the previous steps it's pretty simple to use it like any other p
 <!-- ROADMAP -->
 ## Roadmap
 
-- [ ] Make the calendar window hide when it loses focus. I tried making that but adding a "focus-out-event" to hide the calendar window removed the toggle capability from the main clock button. When clickd on it the window would hide and then reappear again.
+- [ ] Make the calendar window hide when it loses focus. I tried making that but adding a "focus-out-event" to hide the calendar window removed the toggle capability from the main clock button. When clicked on it the window would hide and then reappear again.
 - [ ] Make GUI for Configuration.
 
 See the [open issues](https://github.com/hanzala123/world-clock-xfce-plugin/issues) for a full list of proposed features (and known issues).
@@ -209,7 +209,7 @@ Distributed under the GPLv3 License. See `LICENSE` for more information.
 <!-- CONTACT -->
 ## Contact
 
-Your Name - hanzalarushnan@gmail.com
+My Email - hanzalarushnan@gmail.com
 
 Project Link: [https://github.com/hanzala123/world-clock-xfce-plugin](https://github.com/hanzala123/world-clock-xfce-plugin)
 
