@@ -50,6 +50,7 @@
       <ul>
         <li><a href="#prerequisites">Prerequisites</a></li>
         <li><a href="#installation">Installation</a></li>
+        <li><a href="#updating">Updating</a></li>
       </ul>
     </li>
     <li><a href="#usage">Usage</a></li>
@@ -156,7 +157,23 @@ And then installed it again by running
 And it worked perfectly. Now due to my lack of knowledge in C I could not figure out a better fix for this. If anyone can then feel free to fork it and then create a Pull Request.
 <p align="right">(<a href="#top">back to top</a>)</p>
 
+### Updating
 
+Updating is pretty simple. You just need to go to the project directory and do
+   ```sh
+   git pull
+   ```
+This will sync the changes from the github repo to your local machine. It is recommended that you run 
+   ```sh
+   python3 run.py
+   ```
+Just to make sure everything is working. Then you run the install script
+   ```sh
+   bash install.sh
+   ```
+This will update the plugin. Sometimes it might require restarting the panel (```xfce4-panel -r```) to see the changes take effect.
+
+<p align="right">(<a href="#top">back to top</a>)</p>
 
 <!-- USAGE EXAMPLES -->
 ## Usage
