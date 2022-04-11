@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import os
 import pytz
@@ -7,7 +7,7 @@ import gi
 gi.require_version('Gtk','3.0')
 from gi.repository import Gtk, GLib
 from xdg.BaseDirectory import xdg_config_home
-from datetime import date, datetime
+from datetime import datetime
 
 PLUGIN_NAME        = 'World-Clock-Plugin'
 PLUGIN_VERSION     = '0.1.0'
@@ -37,7 +37,54 @@ class PanelPlugin(Gtk.Box):
         This method is called by sample_py_new() method
         """
         super().__init__()
+        self.load_config()
 
+        button1 = Gtk.Button()
+        self.main_label = Gtk.Label()
+        button1.add(self.main_label)
+
+        self.pack_start(button1, True, True, 0)
+
+        self.all_time_labels = []
+
+        self.new_win = Gtk.Window()
+        self.new_win.set_decorated(False)
+        self.new_win.set_skip_taskbar_hint(True)
+        self.new_win.set_skip_pager_hint(True)
+
+        self.new_win.set_border_width(15)
+        self.new_win.set_keep_above(True)
+
+        box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=5)
+        self.table = Gtk.Table(n_rows=2, n_columns=2, homogeneous=True)
+        self.time_label = Gtk.Label()
+        self.calendar = Gtk.Calendar()
+        button2 = Gtk.Button()
+        button2.add(self.time_label)
+        
+
+        box2 = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=1)
+        box2.set_margin_right(20)
+        box2.pack_start(button2, False, True, 1)
+        box2.pack_start(Gtk.Separator(), True, False, 0)
+        box2.pack_start(self.table, True, True, 1)
+    
+        box.pack_start(box2, True, True, 1)
+        box.pack_end(self.calendar, True, True, 1)
+
+        self.new_win.add(box)
+
+        self.set_table()
+        self.update_time_label()
+        self.main_label.set_justify(Gtk.Justification.CENTER)
+
+        button1.connect("button-press-event", self.click_label)
+        button2.connect("button-press-event", self.reset_calendar)
+
+        GLib.timeout_add(1000, self.update_self)
+
+
+    def load_config(self):
         self.config_path = os.path.join(
             xdg_config_home, 
             "world_clock_plugin@hanzala123"
@@ -57,62 +104,6 @@ class PanelPlugin(Gtk.Box):
         with open(self.config_file) as f:
             self.config = json.load(f)
 
-        # screen = Gdk.Screen.get_default()
-        # provider = Gtk.CssProvider()
-        # style_context = Gtk.StyleContext()
-        # style_context.add_provider_for_screen(screen, provider, Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)
-        #provider.load_from_path('app.css')
-        # provider.load_from_data("#small {margin: 0; padding: 0;}".encode())
-        # provider.load_from_data("#c-button:hover {color:@fg_color; background: @bg_color; -unico-inner-stroke-width: 0;}".encode())
-
-        # self.event_box = Gtk.EventBox()
-        self.button = Gtk.Button()
-        # self.button.set_alignment(0.5, 0.5)
-        # self.set_hexpand(True)
-        # self.button.set_name('small')
-        # self.button.set_justify(Gtk.Justification.CENTER)
-        # self.event_box.set_has_window(True)
-        # self.button.set_events(Gdk.EventMask.BUTTON_PRESS_MASK)
-        # self.event_box.set_can_focus(True)
-        # self.event_box.add(self.button)
-        self.button.connect("button-press-event", self.click_label)
-        # self.Box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=5)
-        self.pack_start(self.button, True, True, 0)
-        # self.Box.pack_start(self.button, True, True, 2)
-        self.all_time_labels = []
-
-        self.new_win = Gtk.Window()
-        self.new_win.set_decorated(False)
-        self.new_win.set_skip_taskbar_hint(True)
-        self.new_win.set_border_width(15)
-        self.new_win.set_keep_above(True)
-
-        # self.new_win.connect("focus-out-event", self.only_hide)
-        # self.new_win.connect("realize", self.only_hide)
-
-        # self.event_box.connect("focus-in-event", self.focus_in)
-        # self.event_box.connect("focus-out-event", self.focus_out)
-
-
-        self.box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=5)
-
-        self.table = Gtk.Table(n_rows=2, n_columns=2, homogeneous=True)
-        self.time_label = Gtk.Label()
-        
-        self.set_table()
-        self.update_time_label()
-        self.box2 =  Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=1)
-        self.box2.set_margin_right(20)
-        self.box2.pack_start(self.time_label, True, True, 1)
-        self.box2.pack_start(Gtk.Separator(), False, False, 0)
-        self.box2.pack_start(self.table, True, True, 1)
-        
-        self.box.pack_start(self.box2, True, True, 1)
-
-        self.box.pack_end(Gtk.Calendar(), True, True, 1)
-        self.new_win.add(self.box)
-        GLib.timeout_add(1000, self.update_self)
-
 
     def click_label(self, a, b):
         if b.button == 1:
@@ -130,10 +121,10 @@ class PanelPlugin(Gtk.Box):
                 self.new_win.show_all()
 
 
-    def only_hide(self, a, b):
-        # print(self.event_box.is_focused_)
-        # if not self.event_box.is_focused_:
-        self.new_win.hide()
+    def reset_calendar(self, a=None, b=None):
+        t_now = datetime.now()
+        self.calendar.select_day(t_now.day)
+        self.calendar.select_month(t_now.month - 1 , t_now.year)
 
 
     def get_win_allocation(self):
@@ -187,8 +178,9 @@ class PanelPlugin(Gtk.Box):
 
 
     def update_time_label(self):
-        self.time_label.set_text(datetime.now().strftime("%A, %B %d, %Y"))
-        self.button.set_label(datetime.now().strftime(self.get_time_fmt()))
+        t_now = datetime.now()
+        self.time_label.set_text(t_now.strftime("%A, %B %d, %Y"))
+        self.main_label.set_text(t_now.strftime(self.get_time_fmt()))
 
 
     def update_self(self):
@@ -218,6 +210,7 @@ class PanelPlugin(Gtk.Box):
         """
         self.set_orientation(orientation)
 
+
     def about(self):
         """
         Xfce4 panel emit "about" signal whenever user request the information
@@ -228,7 +221,7 @@ class PanelPlugin(Gtk.Box):
         dialog.set_program_name(PLUGIN_NAME)
         dialog.set_version(PLUGIN_VERSION)
         dialog.set_comments(PLUGIN_DESCRIPTION)
-        dialog.set_website("https://your.plugin/website")
+        dialog.set_website("https://github.com/hanzala123/world-clock-xfce-plugin")
         dialog.set_authors([PLUGIN_AUTHOR])
         dialog.set_logo_icon_name(PLUGIN_ICON)
 
