@@ -243,4 +243,4 @@ Project Link: [https://github.com/hanzala123/world-clock-xfce-plugin](https://gi
 <p align="right">(<a href="#top">back to top</a>)</p>
 
 
-[product-screenshot]: screenshots/gif1.gif
+[product-screenshot]: screenshots/main_gif.gif
