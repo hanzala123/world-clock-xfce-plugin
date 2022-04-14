@@ -69,7 +69,7 @@
 
 ![World-Clock-Plugin][product-screenshot]
 
-GTK Theme: Orchis-dark, Icon Theme: Papirus, Window Manager: Gala
+GTK Theme: Orchis-dark, Icon Theme: Papirus
 
 After switching to XFCE I was amazed at the speed of everything. But one thing that I really miss from KDE or GNOME is the World Clock. I have never worked with GTK or any such Toolkit ever. So with my very very minimal knowledge of GTK I made a fix for it using the [AppIndicator](https://github.com/hanzala123/world-clock-appindicator). But That was taking up precious space in my vertical panel. So I decided to make a plugin from it. But making an XFCE Planel Plugin using Python (My Speciality) is very poorly if not at all documented. But finally I found a project on gitlab and used that as a Base. Much thanks to the creator of that project.
 
@@ -187,7 +187,6 @@ After Following the previous steps it's pretty simple to use it like any other p
 <!-- ROADMAP -->
 ## Roadmap
 
-- [ ] Make the calendar window hide when it loses focus. I tried making that but adding a "focus-out-event" to hide the calendar window removed the toggle capability from the main clock button. When clicked on it the window would hide and then reappear again.
 - [ ] Make GUI for Configuration.
 
 See the [open issues](https://github.com/hanzala123/world-clock-xfce-plugin/issues) for a full list of proposed features (and known issues).

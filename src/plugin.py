@@ -39,7 +39,7 @@ class PanelPlugin(Gtk.Box):
         super().__init__()
         self.load_config()
 
-        button1 = Gtk.Button()
+        button1 = Gtk.ToggleButton()
         self.main_label = Gtk.Label()
         button1.add(self.main_label)
 
@@ -57,6 +57,7 @@ class PanelPlugin(Gtk.Box):
 
         box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=5)
         self.table = Gtk.Table(n_rows=2, n_columns=2, homogeneous=True)
+
         self.time_label = Gtk.Label()
         self.calendar = Gtk.Calendar()
         button2 = Gtk.Button()
@@ -109,6 +110,8 @@ class PanelPlugin(Gtk.Box):
         if b.button == 1:
             if self.new_win.get_property("visible"):
                 self.new_win.hide()
+                a.set_active(True)
+
             else:
                 if self.get_win_allocation() and self.get_win_allocation() != "auto":
                     win_location = self.get_win_allocation()
@@ -116,7 +119,8 @@ class PanelPlugin(Gtk.Box):
                 else:
                     win_location = [b.x_root, b.y_root]
                     print("Location: ", str(win_location))
-
+            
+                a.set_active(False)
                 self.new_win.move(*win_location)
                 self.new_win.show_all()
 
