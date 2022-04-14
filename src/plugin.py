@@ -199,8 +199,8 @@ class PanelPlugin(Gtk.Box):
         signal to plugin to clean up the allocations or post tasks
         like saving the configurations etc.
         """
-        print("cleaning plugin from python side")
-
+        self.new_win.destroy()
+        self.destroy()
 
     def orientation_changed(self, orientation: int):
         """
