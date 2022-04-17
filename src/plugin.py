@@ -183,13 +183,24 @@ class PanelPlugin(Gtk.Box):
 
     def update_time_label(self):
         t_now = datetime.now()
-        self.time_label.set_text(t_now.strftime("%A, %B %d, %Y"))
-        self.main_label.set_text(t_now.strftime(self.get_time_fmt()))
+        if self.time_label.get_text() != t_now.strftime("%A, %B %d, %Y"):
+            self.time_label.set_text(t_now.strftime("%A, %B %d, %Y"))
+
+        if self.main_label.get_text() != t_now.strftime(self.get_time_fmt()):
+            self.main_label.set_text(t_now.strftime(self.get_time_fmt()))
+
+
+    def update_calendar(self):
+        t_now = datetime.now()
+        t_cal = self.calendar.get_date()
+        if t_now.day != t_cal.day:
+            self.reset_calendar()
 
 
     def update_self(self):
         self.update_table()
         self.update_time_label()
+        self.update_calendar()
         return True
     
 
