@@ -97,6 +97,13 @@ I am on EndeavourOS and most of the required libraries were preinstalled. I had 
   ```sh
   sudo pacman -Sy python-pip meson ninja
   ```
+If you are on Ubuntu or an Ubuntu Based Distro then you can install the dependencies with this
+  ```sh
+  sudo apt-get libxfce4panel-2.0
+  sudo apt-get install python-gi-dev
+  sudo apt-get install libgtk-3-dev
+  sudo apt-get install meson ninja
+  ```
 Then install the required the Python Packages.
   ```sh
   pip3 install -r requirements.txt
@@ -138,23 +145,7 @@ If you see it working when you run ```python3 run.py``` then you can install it 
    ```sh
    bash install.sh
    ```
-Though in My case The Plugin kept removing it self and after following the [Panel Debug Docs](https://docs.xfce.org/xfce/xfce4-panel/debugging/) I figured the problem was the line 27 in ```src/plugin.c``` This did not match the python version that was installed on my system which I checked using this 
-   ```sh
-   python3 --version
-   ```
-So I replaced 
-  ```
-  dlopen("libpython3.9.so", RTLD_LAZY | RTLD_GLOBAL);
-  ```
-with
-  ```
-  dlopen("libpython3.10.so", RTLD_LAZY | RTLD_GLOBAL);
-  ```
-And then installed it again by running 
-   ```sh
-   bash install.sh
-   ```
-And it worked perfectly. Now due to my lack of knowledge in C I could not figure out a better fix for this. If anyone can then feel free to fork it and then create a Pull Request.
+
 <p align="right">(<a href="#top">back to top</a>)</p>
 
 ### Updating
