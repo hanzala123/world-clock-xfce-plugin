@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import imp
 import os
 import pytz
 import json
@@ -15,13 +16,215 @@ PLUGIN_DESCRIPTION = 'Simple World Clock Plugin Written In Python'
 PLUGIN_AUTHOR      = 'Hanzala Ibn Zahid <hanzalarushnan@gmail.com>'
 PLUGIN_ICON        = 'org.xfce.panel.clock'
 
-CONFIG_BASE = """{
-  "format": "%H:%M",
-  "allocation": "auto",
-  "timezones": [
-    ["Europe/Amsterdam", "Amsterdam"]
-  ]
-}"""
+CONFIG_BASE = {
+    "format": "%H:%M", 
+    "date_format": "%m/%d/%y", 
+    "allocation": "auto", 
+    "timezones": ["Europe/Amsterdam", "Etc/UTC"]
+}
+
+
+class ConfigWindow(Gtk.Window):
+    def __init__(self, main_plugin):
+        super().__init__(title="World Clock Plugin Settings")
+
+        self.set_border_width(10)
+        self.existing_tz = main_plugin.get_time_zones()
+        self.tz_store = {}
+        for tz in pytz.all_timezones:
+            if len(tz.split("/", 1)) < 2:
+                continue
+
+            z, t = tz.split("/", 1)
+            if z not in self.tz_store:
+                self.tz_store[z] = []
+                
+            self.tz_store[z].append(t)
+
+        self.main_plugin = main_plugin
+        self.time_fmt_entry = Gtk.Entry()
+        self.time_fmt_entry.set_text(self.main_plugin.get_time_fmt())
+
+        self.date_fmt_entry = Gtk.Entry()
+        self.date_fmt_entry.set_text(self.main_plugin.get_date_fmt())
+        
+        self.allocation_entry = Gtk.Entry()
+        allocation = self.main_plugin.get_win_allocation()
+        if allocation != "auto":
+            allocation = ", ".join([str(i) for i in allocation])
+        self.allocation_entry.set_text(allocation)
+        self.allocation_entry.set_tooltip_text("Set to auto or the postion in x, y format i.e. 10, 230")
+
+        self.zone_combo = Gtk.ComboBoxText()
+        self.zone_combo.set_entry_text_column(0)
+        self.zone_combo.connect("changed", self.on_zone_combo_changed)
+
+        for z in self.tz_store:
+            self.zone_combo.append_text(z)
+
+        self.tz_combo = Gtk.ComboBoxText()
+        self.tz_combo.set_entry_text_column(0)
+        self.zone_combo.set_active(0)
+
+        add_btn = Gtk.Button(label="Add")
+        add_btn.connect("clicked", self.add_new)
+
+        self.listbox = Gtk.ListBox()
+        self.load_existing_tz()
+        del_btn = Gtk.Button(label="Delete")
+        del_btn.connect("clicked", self.delete_tz)
+
+        mbox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=6)
+        self.add(mbox)
+
+        vbox = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=6)
+        
+        vbox.pack_start(self.zone_combo, False, False, 0)
+        vbox.pack_start(self.tz_combo, False, False, 0)
+        vbox.pack_start(add_btn, False, False, 0)
+
+        bbox = Gtk.ButtonBox()
+        bbox.set_orientation(Gtk.Orientation.HORIZONTAL)
+        bbox.set_spacing(2)
+
+        close_btn = Gtk.Button(label="Close")
+        apply_btn = Gtk.Button(label="Apply")
+
+        close_btn.connect("clicked", lambda dialog: self.destroy())
+        apply_btn.connect("clicked", self.save_new_config)
+
+        bbox.add(close_btn)
+        bbox.add(apply_btn)
+        
+        mbox.pack_start(Gtk.Label(label="Main Time Format"), False, False, 0)
+        mbox.pack_start(self.time_fmt_entry, False, False, 0)
+        
+        l = Gtk.Label(label="Date Format For World Clocks")
+        l.set_margin_top(15)
+        mbox.pack_start(l, False, False, 0)
+        mbox.pack_start(self.date_fmt_entry, False, False, 0)
+
+        l = Gtk.Label(label="Calendar Window Allocation")
+        l.set_margin_top(15)
+        mbox.pack_start(l, False, False, 0)
+        mbox.pack_start(self.allocation_entry, False, False, 0)
+
+        l = Gtk.Label(label="Existing Timezone(s)")
+        l.set_margin_top(15)
+        mbox.pack_start(l, False, False, 0)
+        self.listbox.set_margin_top(5)
+        mbox.pack_start(self.listbox, True, True, 0)
+        mbox.pack_start(del_btn, False, False, 0)
+
+        l = Gtk.Label(label="Add New Timezone")
+        l.set_margin_top(15)
+        mbox.pack_start(l, False, False, 0)
+        mbox.pack_start(vbox, False, False, 0)
+
+        self.status_label = Gtk.Label()
+        self.status_label.set_margin_top(20)
+        mbox.pack_start(self.status_label, False, False, 0)
+
+        bbox.set_margin_top(20)
+        mbox.pack_start(bbox, False, False, 0)
+
+
+    def set_status(self, text, success=False):
+        color = "#f24646"
+        if success:
+            color = "#80f246"
+        self.status_label.set_markup(f"<span foreground=\"{color}\">{text}</span>")
+
+
+    def save_new_config(self, *args):
+        config = self.main_plugin.config
+
+        time_fmt = self.time_fmt_entry.get_text()
+        try:
+            datetime.now().strftime(time_fmt)
+
+        except Exception:
+            self.set_status("Error in parsing `Main Time Format`")
+            return
+
+
+        date_fmt = self.date_fmt_entry.get_text()
+        try:
+            datetime.now().strftime(date_fmt)
+            
+        except Exception:
+            self.set_status("Error in parsing `Date Format For World Clocks`")
+            return
+
+
+        allocation = self.allocation_entry.get_text()
+
+        try:
+            if allocation != "auto":
+                allocation = [int(i.strip()) for i in allocation.split(",")]
+
+        except Exception:
+            self.set_status("Calendar Window Allocation must be in `x:integer, y:integer` format or `auto`")
+            return
+
+
+        if self.main_plugin.new_win.get_property("visible"):
+            self.main_plugin.new_win.move(*allocation)
+
+        config = {
+          "format": time_fmt,
+          "date_format": date_fmt,
+          "allocation": allocation,
+          "timezones": self.existing_tz
+        }
+        with open(self.main_plugin.config_file, "w") as f:
+            json.dump(config, f)
+
+        self.set_status("Configuration Saved!!", success=True)
+        self.main_plugin.load_config()
+        self.main_plugin.clear_table()
+
+
+    def load_existing_tz(self):
+        for w in self.listbox.get_children():
+            w.destroy()
+
+        for item in self.existing_tz:
+            l = Gtk.ListBoxRow()
+            l.data = item
+            l.add(Gtk.Label(label=item))
+            self.listbox.add(l)
+
+        self.listbox.show_all()
+
+
+    def on_zone_combo_changed(self, combo):
+        text = combo.get_active_text()
+
+        if text is not None:
+            self.tz_combo.remove_all()
+            for z in self.tz_store[text]:
+                self.tz_combo.append_text(z)
+
+            self.tz_combo.set_active(0)
+
+
+    def add_new(self, *args):
+        tz = self.zone_combo.get_active_text()
+        tz += "/" 
+        tz += self.tz_combo.get_active_text()
+        self.existing_tz.append(tz)
+        self.load_existing_tz()
+
+
+    def delete_tz(self, *args):
+        tz = self.listbox.get_selected_row()
+        if tz is not None:
+            tz = tz.data
+            self.existing_tz.remove(tz)
+            self.load_existing_tz()
+
+
 
 class PanelPlugin(Gtk.Box):
     """
@@ -55,8 +258,9 @@ class PanelPlugin(Gtk.Box):
         self.new_win.set_border_width(15)
         self.new_win.set_keep_above(True)
 
-        box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=5)
+        box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=0)
         self.table = Gtk.Table(n_rows=2, n_columns=2, homogeneous=True)
+        self.table.set_row_spacings(10)
 
         self.time_label = Gtk.Label()
         self.calendar = Gtk.Calendar()
@@ -64,14 +268,14 @@ class PanelPlugin(Gtk.Box):
         button2.add(self.time_label)
         
 
-        box2 = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=1)
-        box2.set_margin_right(20)
-        box2.pack_start(button2, False, True, 1)
-        box2.pack_start(Gtk.Separator(), True, False, 0)
-        box2.pack_start(self.table, True, True, 1)
+        self.box2 = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=0)
+        self.box2.set_margin_right(20)
+        self.box2.pack_start(button2, False, True, 1)
+        self.box2.pack_start(Gtk.Separator(), True, False, 12)
+        self.box2.pack_start(self.table, False, False, 0)
     
-        box.pack_start(box2, True, True, 1)
-        box.pack_end(self.calendar, True, True, 1)
+        box.pack_start(self.box2, False, False, 1)
+        box.pack_end(self.calendar, False, False, 1)
 
         self.new_win.add(box)
 
@@ -85,6 +289,10 @@ class PanelPlugin(Gtk.Box):
         GLib.timeout_add(1000, self.update_self)
 
 
+    def open_config_window(self):
+        ConfigWindow(self).show_all()
+
+
     def load_config(self):
         self.config_path = os.path.join(
             xdg_config_home, 
@@ -95,12 +303,8 @@ class PanelPlugin(Gtk.Box):
         if not os.path.exists(self.config_path):
             os.makedirs(self.config_path)
             with open(self.config_file, "w") as f:
-                f.write(CONFIG_BASE)
-            
-            with open(os.path.join(self.config_path, "available_timezones.txt"), "w") as f:
-                for timezone in pytz.all_timezones:
-                    f.write(timezone)
-                    f.write("\n")
+                json.dump(CONFIG_BASE, f)     
+
 
         with open(self.config_file) as f:
             self.config = json.load(f)
@@ -118,7 +322,7 @@ class PanelPlugin(Gtk.Box):
 
                 else:
                     win_location = [b.x_root, b.y_root]
-                    print("Location: ", str(win_location))
+                    # print("Location: ", str(win_location))
             
                 a.set_active(False)
                 self.new_win.move(*win_location)
@@ -132,7 +336,7 @@ class PanelPlugin(Gtk.Box):
 
 
     def get_win_allocation(self):
-        return self.config.get("allocation")
+        return self.config.get("allocation", "auto")
 
 
     def get_time_fmt(self):
@@ -143,12 +347,17 @@ class PanelPlugin(Gtk.Box):
         return self.config["timezones"]
 
 
+    def get_date_fmt(self):
+        return self.config["date_format"]
+
+
     def timezone_to_time_str(self, timezone):
         tz = pytz.timezone(timezone)
         time = (datetime.now(tz))
         time_str = time.strftime("%H:%M")
+        date_fmt = self.get_date_fmt()
         if time.strftime("%d/%m/%Y") != datetime.now().strftime("%d/%m/%Y"):
-            time_str = time.strftime("%H:%M (%d/%m/%Y)")
+            time_str = time.strftime(f"%H:%M ({date_fmt})")
 
         return time_str
 
@@ -156,19 +365,29 @@ class PanelPlugin(Gtk.Box):
     def get_all_times(self):
         timezones = self.get_time_zones()   
         times = []
-        for timezone, name in timezones:
+        for timezone in timezones:
             time_str = self.timezone_to_time_str(timezone)
-            times.append([time_str, name, timezone])
+            times.append([time_str, timezone])
 
         return times
 
 
+    def clear_table(self, *args):
+        self.table.destroy()
+        self.table = Gtk.Table(n_rows=2, n_columns=2, homogeneous=True)
+        self.table.set_row_spacings(10)
+        self.box2.pack_start(self.table, False, False, 0)
+        self.set_table()
+        if self.new_win.get_property("visible"):
+            self.new_win.show_all()
+
+
     def set_table(self):
         self.all_time_labels = []
-        for time_str, name, timezone in self.get_all_times():
+        for time_str, timezone in self.get_all_times():
             label = Gtk.Label(label=time_str)
             label.timezone = timezone
-            label.timezone_name = name
+            label.timezone_name = timezone.split("/", 1)[1]
             self.all_time_labels.append(label)
 
         for indx, label in enumerate(self.all_time_labels):

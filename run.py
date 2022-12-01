@@ -36,9 +36,17 @@ class Preview(Gtk.Window):
         orientation_btn = Gtk.Button(label="Horizontal")
         orientation_btn.connect("clicked", self.emit_orientation_change)
         button_box.add(orientation_btn)
+
+
+        config_btn = Gtk.Button(label="Config")
+        config_btn.connect("clicked", self.emit_prop_signal)
+        button_box.add(config_btn)
     
     def emit_about_signal(self, button: Gtk.Button) -> None:
         self.plugin.about()
+
+    def emit_prop_signal(self, button: Gtk.Button) -> None:
+        self.plugin.open_config_window()
 
     def emit_orientation_change(self, button: Gtk.Button) -> None:
         if self.orientation == 0:

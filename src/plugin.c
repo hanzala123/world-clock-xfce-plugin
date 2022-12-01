@@ -126,6 +126,14 @@ sample_py_about(XfcePanelPlugin *plugin,
 }
 
 static void
+sample_py_configure(XfcePanelPlugin *plugin,
+                SamplePyPlugin *sample_py)
+{
+    // calling 'open_config_window' method from python object,
+    PyObject_CallMethod(sample_py->py_object, "open_config_window", "");
+}
+
+static void
 sample_py_construct(XfcePanelPlugin *plugin)
 {
     SamplePyPlugin *sample_py;
@@ -149,8 +157,12 @@ sample_py_construct(XfcePanelPlugin *plugin)
 
     xfce_panel_plugin_add_action_widget(plugin, GTK_WIDGET(widget));
 
-    // show the about menue item and connect signal
+    // show the about menu item and connect signal
     xfce_panel_plugin_menu_show_about(plugin);
+
+    // show the properties menu item and connect signal
+    xfce_panel_plugin_menu_show_configure(plugin);
+
     g_signal_connect(G_OBJECT(plugin), "about",
                      G_CALLBACK(sample_py_about), sample_py);
 
@@ -159,4 +171,7 @@ sample_py_construct(XfcePanelPlugin *plugin)
 
     g_signal_connect(G_OBJECT(plugin), "orientation-changed",
                      G_CALLBACK(sample_py_orientation_changed), sample_py);
+
+    g_signal_connect(G_OBJECT(plugin), "configure-plugin",
+                     G_CALLBACK(sample_py_configure), sample_py);            
 }

@@ -50,6 +50,7 @@
       <ul>
         <li><a href="#prerequisites">Prerequisites</a></li>
         <li><a href="#installation">Installation</a></li>
+        <li><a href="#configuration">Configuration</a></li>
         <li><a href="#updating">Updating</a></li>
       </ul>
     </li>
@@ -113,31 +114,6 @@ Then You can test it by running this command from the project directory.
   ```sh
   python3 run.py
   ```
-Running it first time will automatically create the config files at 
-  ```~/.config/world_clock_plugin@hanzala123/```
-
-The configuration file is called config.json and as the name suggests the file is in JSON format. It has three keys ```format```, ```allocation``` and ```timezones```.
-
-The ```format``` is the format in which the time will be displayed. The convention is the one used for formating string in Python's DateTime Module. More About that [here](https://www.programiz.com/python-programming/datetime/strftime).
-
-The ```allocation``` is the place where the calendar will appear. By default it set to ```auto```. Which shows the Calendar next to the plugin when clicked. It can also be set to show at a specific location on the screen. The value should be a list to show the X and Y coordinates of the place the calendar will appear. Something like this
-  ```json
-  "allocation": [0, 0]
-  ```
-The above will show the calendar in the top left corner of the screen (or as close as possible to that).
-
-The ```timezones``` sets the timezones that will appear. By default it's set to Europe/Amsterdam. This is basically as list of lists. The First element of of each child list the generic name of the timezone and the other element is the name that the user wants to be displayed as the name of that timezone. When the program is run for the first time it will also create a file called ```available_timezones.txt``` in the config directory. This will help you find the generic name of the timezone you wish to add. If I want to Dhaka to the plugin alongside Amsterdam it will look like this.
-  ```json
-    "timezones": [
-    ["Europe/Amsterdam", "Amsterdam"],
-    ["Asia/Dhaka", "Dhaka"]
-  ]
-  ```
-
-PS: It is recommended that you check if the configraution is working or not by running ```python3 run.py```. Also for efficiency the config is kept in memory. So any changes will not take effect until the the app is restarted. Or if it is already added to the panel then you need to restart the panel by doing
-  ```sh
-  xfce4-panel -r
-  ```
 
 ### Installation
 
@@ -166,6 +142,36 @@ This will update the plugin. Sometimes it might require restarting the panel (``
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
+
+### Configuration
+
+Running it first time will automatically create the config files at 
+  ```~/.config/world_clock_plugin@hanzala123/```
+
+You can open the configuration window for this the same way as other plugins.
+
+#### Main Time Format
+This is the format in which the time will be shown in the panel. The convention is the one used for formating string in Python's DateTime Module. More about that [here](https://www.programiz.com/python-programming/datetime/strftime).
+
+#### Date Format For World Clocks
+This the the format in which the date will be displayed on the world clocks. The same convention is used here as well.
+
+#### Calendar Window Allocation
+This is the place where the calendar/world clock window will appear. By default it set to ```auto```. Which shows the Calendar next to the plugin when clicked. It can also be set to show at a specific location on the screen. The value should be comma separated X and Y coordinates of the place the calendar will appear. Something like this ```0, 0``` will show the calendar in the top left corner of the screen (or as close as possible to that).
+
+#### Existing Timezone(s) / Delete a Timezone
+Here all the currently configured timezones will appear. To delete a timezone click on the timezone and once it is selected click on the 'Delete' button.
+
+#### Add New Timezone
+You can use this section to add new timezones. To do so first select the area from the left most dropdown selector. Then select the region from the second left most dropdown selector. Finally click on the 'Add' button to add the selected timezone.
+
+
+PS: YOU MUST CLICK ON THE 'Apply' BUTTON FOR THE CHANGES TO BE APPLIED AND SAVED.
+
+<p align="right">(<a href="#top">back to top</a>)</p>
+
+
+
 <!-- USAGE EXAMPLES -->
 ## Usage
 
@@ -178,7 +184,7 @@ After Following the previous steps it's pretty simple to use it like any other p
 <!-- ROADMAP -->
 ## Roadmap
 
-- [ ] Make GUI for Configuration.
+- [x] Make GUI for Configuration.
 
 See the [open issues](https://github.com/hanzala123/world-clock-xfce-plugin/issues) for a full list of proposed features (and known issues).
 
@@ -215,8 +221,6 @@ Distributed under the GPLv3 License. See `LICENSE` for more information.
 
 <!-- CONTACT -->
 ## Contact
-
-My Email - hanzalarushnan@gmail.com
 
 Project Link: [https://github.com/hanzala123/world-clock-xfce-plugin](https://github.com/hanzala123/world-clock-xfce-plugin)
 
